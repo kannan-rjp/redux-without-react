@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO with Redux without React</title>
+</head>
+<body>
+    <h2>TODO APP WITH REDUX</h2>
+    <form>
+        <input type="text" name="actvity" id="" placeholder="Write to do...">
+        <button id="add" type="submit">+ ADD</button>
+    </form>
+    <ul></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.js"></script>
+    
+    
+    <script>
+        const form = document.querySelector('form');
+        const input = document.querySelector('input');
+        const ul = document.querySelector('ul');
+        
+        
+        // actions type
+        const ADD_TODO = 'ADD_TODO';
+        const DELETE_TODO = 'DELETE_TODO';
+        
+        // acion creators
+        const addTodo = (text)=> {
+            return {
+                type: ADD_TODO,
+                text
+            }
+        }
+        // action creators
+        const deleteTodo = (id)=> {
+            return{
+                type:DELETE_TODO,
+                id
+            }
+        }
+
+        // reducer
+        
+        function reducer(initial_state = [],action){
+            switch(action.type){
+                case 'ADD_TODO':
+                    const newObj = {text: action.text,id : crypto.randomUUID()} 
+                    console.log([...initial_state,newObj],'I am spread')
+                    // console.log(initial_state,'Iam State init')
+                    return [...initial_state,newObj];
+                case 'DELETE_TODO':
+                    const clearTodo = initial_state.filter((todo)=> todo.id !== action.id);
+                    console.log(clearTodo,'THe final statt')
+                    return clearTodo;
+                    
+            }
+
+        } 
+        
+        const dispathtodoAdd = (text)=>{
+            store.dispatch(addTodo(text));
+        }
+        const dispatchtodoDel = (event)=> {
+            const id = event.target.parentNode.id;
+            store.dispatch(deleteTodo(id));
+        }
+
+        //print todos
+        const printtodo = ()=> {
+            const todo_list = store.getState();
+            ul.innerHTML='';
+            todo_list.forEach((todo)=>{
+                console.log(todo,'the collection')
+                const li = document.createElement('li');
+                const deleteBtn = document.createElement("button");
+                li.id = todo.id;
+                li.innerText = todo.text;
+                ul.appendChild(li);
+                deleteBtn.innerText = 'X';
+                li.appendChild(deleteBtn);
+                deleteBtn.addEventListener('click',dispatchtodoDel);
+            })
+            // console.log(todo_list,'Collection array')
+        } 
+
+       form.addEventListener('submit',function(e){
+            e.preventDefault();
+            let input_val = input.value;
+            dispathtodoAdd(input_val);
+            input.value = ' '; 
+        })
+
+        // store
+        let store = Redux.createStore(reducer);
+        
+        // state listener
+        store.subscribe(printtodo); 
+
+    
+    </script>
+
+
+</body>
+</html>
